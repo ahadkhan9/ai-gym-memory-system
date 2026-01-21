@@ -1,8 +1,7 @@
 """
 Application Configuration
 
-This module manages all configuration settings, loading from environment
-variables with sensible defaults.
+Loads and manages all configuration settings from environment variables.
 """
 
 from pydantic_settings import BaseSettings
@@ -12,15 +11,10 @@ from typing import Optional
 class Settings(BaseSettings):
     """Application settings loaded from environment variables"""
 
-    # Gemini API Configuration
-    gemini_api_key: str
-    gemini_model: str = "gemini-flash"
-
-    # Database Configuration
-    database_url: str
-    chroma_host: str = "localhost"
-    chroma_port: int = 8000
-    chroma_collection: str = "workout_memories"
+    # Gemini API Configuration (OpenAI-compatible endpoint)
+    gemini_base_url: str = "https://solid-cloths-search.loca.lt/v1"
+    gemini_api_key: str = "sk-2be085140ff24a9eb28fafc66f25db49"
+    gemini_model: str = "gemini-3-flash"
 
     # Embedding Configuration
     embedding_model: str = "all-MiniLM-L6-v2"
@@ -31,11 +25,6 @@ class Settings(BaseSettings):
     api_host: str = "0.0.0.0"
     api_port: int = 8000
     log_level: str = "INFO"
-
-    # Security
-    secret_key: str
-    algorithm: str = "HS256"
-    access_token_expire_minutes: int = 30
 
     # Application Settings
     max_query_results: int = 10

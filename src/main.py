@@ -7,6 +7,16 @@ middleware, and startup/shutdown events.
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import logging
+
+from src.api.routes import activities, queries
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="AI Gym & Activity Memory System",
@@ -25,36 +35,45 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Include API routes
+app.include_router(activities.router, prefix="/api/v1", tags=["Activities"])
+app.include_router(queries.router, prefix="/api/v1", tags=["Queries"])
+
+
 @app.get("/")
 async def root():
     """Root endpoint - API health check"""
     return {
         "message": "AI Gym & Activity Memory System API",
         "status": "online",
-        "version": "1.0.0"
+        "version": "1.0.0",
+        "endpoints": {
+            "log_activity": "POST /api/v1/activities/log",
+            "get_activities": "GET /api/v1/activities/all",
+            "get_stats": "GET /api/v1/activities/stats",
+            "search": "POST /api/v1/queries/search",
+            "search_by_exercise": "GET /api/v1/queries/by-exercise/{exercise}",
+            "search_by_date": "GET /api/v1/queries/by-date",
+            "docs": "/docs"
+        }
     }
+
 
 @app.get("/health")
 async def health_check():
     """Health check endpoint for monitoring"""
     return {"status": "healthy"}
 
-# TODO: Import and include API routes
-# from src.api.routes import activities, queries
-# app.include_router(activities.router, prefix="/api/v1", tags=["activities"])
-# app.include_router(queries.router, prefix="/api/v1", tags=["queries"])
 
 @app.on_event("startup")
 async def startup_event():
     """Initialize services on application startup"""
-    # TODO: Initialize database connections
-    # TODO: Initialize ChromaDB client
-    # TODO: Load embedding model
-    pass
+    logger.info("🚀 AI Gym & Activity Memory System starting up...")
+    logger.info("✅ Services will be initialized on first request")
+    logger.info("📚 API documentation available at /docs")
+
 
 @app.on_event("shutdown")
 async def shutdown_event():
     """Cleanup on application shutdown"""
-    # TODO: Close database connections
-    # TODO: Close ChromaDB client
-    pass
+    logger.info("👋 AI Gym & Activity Memory System shutting down...")
